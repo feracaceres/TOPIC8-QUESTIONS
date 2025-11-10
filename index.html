@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish External Economy Quiz</title>
+    <!-- 1. Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A simple style for the correct/incorrect feedback */
+        .correct {
+            background-color: #d1fae5; /* Green-100 */
+            border-color: #10b981; /* Green-500 */
+        }
+        .incorrect {
+            background-color: #fee2e2; /* Red-100 */
+            border-color: #ef4444; /* Red-500 */
+        }
+        .selected {
+             border-width: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-3xl">
+        
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+            
+            <!-- Header -->
+            <div id="quiz-header" class="mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Spanish External Economy Quiz</h1>
+                <p class="text-gray-600">Based on Topic 8: The External Openness of the Spanish Economy</p>
+                <div class="h-2 w-full bg-gray-200 rounded-full mt-4">
+                    <div id="progress-bar" class="h-2 bg-blue-500 rounded-full" style="width: 0%;"></div>
+                </div>
+                <div id="progress-text" class="text-sm text-gray-500 text-right mt-1">Question 0 / 10</div>
+            </div>
+
+            <!-- Question Area -->
+            <div id="question-area" class="mb-6">
+                <h2 id="question-text" class="text-xl font-semibold text-gray-700 mb-4">Question text will load here...</h2>
+                <div id="options-container" class="space-y-3">
+                    <!-- Options will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Rationale Area (hidden by default) -->
+            <div id="rationale-area" class="hidden p-4 rounded-md mb-6">
+                <h3 id="rationale-title" class="font-bold text-lg mb-2"></h3>
+                <p id="rationale-text" class="text-gray-700"></p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div id="navigation-buttons" class="flex justify-between items-center">
+                <button id="check-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-300 disabled:opacity-50" disabled>
+                    Check Answer
+                </button>
+                <button id="next-btn" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-300 hidden">
+                    Next Question
+                </button>
+            </div>
+
+            <!-- Results Screen (hidden by default) -->
+            <div id="results-screen" class="hidden text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
+                <p class="text-xl text-gray-600 mb-6">You scored <span id="score-text" class="font-bold">0</span> out of <span id="total-text" class="font-bold">10</span>.</p>
+                <button id="restart-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow transition duration-300">
+                    Restart Quiz
+                </button>
+            </div>
+
+        </div>
+
+        <footer class="text-center text-gray-500 text-sm mt-6">
+            A simple quiz generator.
+        </footer>
+
+    </div>
+
+    <!-- 2. JavaScript Logic -->
+    <script>
+        // 2.1. Quiz Data
+        const quizData = [
+            {
+                question: "What was a major consequence of Spain joining the European Union (EU) on its economy?",
+                options: [
+                    "A significant decrease in tourism.",
+                    "Isolation from international markets.",
+                    "A deep process of internationalization and increased foreign trade.",
+                    "A shift back to an agricultural economy."
+                ],
+                correct: 2, // Index of the correct answer
+                rationale: "Joining the EU (then EEC) in 1986 was a key driver for Spain's economic modernization, opening it up to international trade and investment."
+            },
+            {
+                question: "The 'degree of openness' of an economy is often measured by the ratio of:",
+                options: [
+                    "Government spending to GDP.",
+                    "Total population to land area.",
+                    "Exports plus Imports to GDP.",
+                    "Inflation rate to unemployment rate."
+                ],
+                correct: 2,
+                rationale: "This ratio (X+M)/GDP is a standard indicator of how much an economy depends on international trade relative to its total size."
+            },
+            {
+                question: "Historically, Spain's trade balance has been characterized by:",
+                options: [
+                    "A large and persistent trade surplus (exports > imports).",
+                    "A structural trade deficit (imports > exports).",
+                    "A perfect balance between exports and imports.",
+                    "Almost no international trade."
+                ],
+                correct: 1,
+                rationale: "For much of its modern history, Spain has imported more goods than it exports, leading to a trade deficit, often offset by tourism income."
+            },
+            {
+                question: "What is the most significant component of Spain's exports?",
+                options: [
+                    "Raw agricultural products like olives and wine.",
+                    "Energy products like oil and gas.",
+                    "Industrial goods, capital equipment, and semi-manufactured goods.",
+                    "Financial services and software."
+                ],
+                correct: 2,
+                rationale: "While agriculture is famous, Spain's export economy is dominated by industrial goods, including cars, machinery, and chemical products."
+            },
+            {
+                question: "Which geographic area is overwhelmingly Spain's largest trading partner?",
+                options: [
+                    "Latin America",
+                    "Asia (China and Japan)",
+                    "The European Union (EU)",
+                    "North America (USA and Canada)"
+                ],
+                correct: 2,
+                rationale: "Due to the single market, the vast majority of Spain's exports and imports are with other EU countries, especially France, Germany, and Portugal."
+            },
+            {
+                question: "What does 'FDI' (Foreign Direct Investment) refer to?",
+                options: [
+                    "A government tax on imported goods.",
+                    "An investment made by a firm or individual in one country into business interests located in another country.",
+                    "The total foreign debt of a nation.",
+                    "A short-term loan between central banks."
+                ],
+                correct: 1,
+                rationale: "FDI involves acquiring a substantial interest in a foreign business, implying a long-term relationship and influence on management."
+            },
+            {
+                question: "In recent decades, Spain's role in FDI has evolved from being primarily a:",
+                options: [
+                    "Receiver of FDI, to also being a significant provider/issuer of FDI.",
+                    "Provider of FDI, to being only a receiver.",
+                    "Country with no FDI, to a global leader in FDI.",
+                    "Country that only trades with Latin America."
+                ],
+                correct: 0,
+                rationale: "While Spain still receives much FDI, large Spanish companies (like in banking and telecoms) have become major foreign investors, especially in Latin America."
+            },
+            {
+                question: "The 'Current Account' in the Balance of Payments includes:",
+                options: [
+                    "Only the trade of goods.",
+                    "Only financial investments.",
+                    "Trade in goods, services (like tourism), income, and current transfers.",
+                    "Only government borrowing."
+                ],
+                correct: 2,
+                rationale: "The Current Account is a broad measure. For Spain, the trade deficit (goods) is often balanced by a surplus in services (tourism)."
+            },
+            {
+                question: "A persistent current account deficit typically leads to an increase in a country's:",
+                options: [
+                    "Gold reserves.",
+                    "Net foreign debt.",
+                    "Export competitiveness.",
+                    "Domestic savings rate."
+                ],
+                correct: 1,
+                rationale: "If a country buys more from the world than it sells (a deficit), it must finance this difference by borrowing from abroad, increasing its foreign debt."
+            },
+            {
+                question: "What is one potential adjustment policy to correct a structural external imbalance (deficit)?",
+                options: [
+                    "Increasing government spending to boost imports.",
+                    "Raising the minimum wage to increase costs.",
+                    "Implementing structural reforms to improve competitiveness and boost exports.",
+                    "Encouraging citizens to take more foreign holidays."
+                ],
+                correct: 2,
+                rationale: "Policies that make a country's exports cheaper or better (improving competitiveness) are a key way to help close a trade gap."
+            }
+        ];
+
+        // 2.2. DOM Elements
+        const quizContainer = document.getElementById('quiz-container');
+        const questionArea = document.getElementById('question-area');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const rationaleArea = document.getElementById('rationale-area');
+        const rationaleTitle = document.getElementById('rationale-title');
+        const rationaleText = document.getElementById('rationale-text');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resultsScreen = document.getElementById('results-screen');
+        const scoreText = document.getElementById('score-text');
+        const totalText = document.getElementById('total-text');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        
+        // 2.3. Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null; // To store the DOM element of the selected option
+
+        // 2.4. Functions
+        
+        /**
+         * Starts or restarts the quiz
+         */
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultsScreen.classList.add('hidden');
+            questionArea.classList.remove('hidden');
+            quizContainer.querySelector('#quiz-header').classList.remove('hidden');
+            document.getElementById('navigation-buttons').classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            checkBtn.classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        /**
+         * Loads the current question and options
+         */
+        function loadQuestion() {
+            // Reset state from previous question
+            selectedOption = null;
+            rationaleArea.classList.add('hidden');
+            checkBtn.disabled = true;
+            nextBtn.classList.add('hidden');
+            checkBtn.classList.remove('hidden');
+
+            // Get current question data
+            const question = quizData[currentQuestionIndex];
+            
+            // Update UI
+            questionText.textContent = question.question;
+            optionsContainer.innerHTML = ''; // Clear previous options
+            
+            // Update progress
+            progressText.textContent = `Question ${currentQuestionIndex + 1} / ${quizData.length}`;
+            progressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
+
+            // Create and append option buttons
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add(
+                    'w-full', 'text-left', 'p-4', 'border', 'border-gray-300', 
+                    'rounded-lg', 'hover:bg-gray-100', 'transition', 'duration-200'
+                );
+                button.dataset.index = index; // Store the option index
+                
+                button.addEventListener('click', () => selectOption(button, index));
+                
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles option selection
+         */
+        function selectOption(button, index) {
+            // Remove 'selected' class from previously selected option
+            if (selectedOption) {
+                selectedOption.classList.remove('selected', 'border-blue-500');
+            }
+            
+            // Add 'selected' class to the new one
+            selectedOption = button;
+            selectedOption.classList.add('selected', 'border-blue-500');
+            
+            // Enable the check button
+            checkBtn.disabled = false;
+        }
+
+        /**
+         * Checks the selected answer
+         */
+        function checkAnswer() {
+            const question = quizData[currentQuestionIndex];
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            const correctIndex = question.correct;
+
+            // Disable all option buttons
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('cursor-not-allowed');
+            });
+            
+            // Check if the answer is correct
+            if (selectedIndex === correctIndex) {
+                score++;
+                selectedOption.classList.add('correct');
+                rationaleTitle.textContent = "Correct!";
+                rationaleArea.classList.add('bg-green-100', 'border', 'border-green-300');
+                rationaleArea.classList.remove('bg-red-100', 'border-red-300');
+            } else {
+                selectedOption.classList.add('incorrect');
+                // Also highlight the correct answer
+                optionsContainer.children[correctIndex].classList.add('correct');
+                rationaleTitle.textContent = "Incorrect";
+                rationaleArea.classList.add('bg-red-100', 'border', 'border-red-300');
+                rationaleArea.classList.remove('bg-green-100', 'border-green-300');
+            }
+
+            // Show rationale
+            rationaleText.textContent = question.rationale;
+            rationaleArea.classList.remove('hidden');
+
+            // Toggle buttons
+            checkBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+        
+        /**
+         * Moves to the next question or shows results
+         */
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        /**
+         * Displays the final results screen
+         */
+        function showResults() {
+            questionArea.classList.add('hidden');
+            document.getElementById('navigation-buttons').classList.add('hidden');
+            rationaleArea.classList.add('hidden');
+            quizContainer.querySelector('#quiz-header').classList.add('hidden');
+            
+            resultsScreen.classList.remove('hidden');
+            scoreText.textContent = score;
+            totalText.textContent = quizData.length;
+        }
+
+        // 2.5. Event Listeners
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+
+        // 2.6. Initial Quiz Load
+        startQuiz();
+    </script>
+</body>
+</html>
